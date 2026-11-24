@@ -17,7 +17,7 @@ def next_question(llm: LLM, topic: str, total: int, turns: list[Turn], store: Ve
         prompt = rag_question_prompt(topic, n, total, turns, ctx)
     else:
         prompt = question_prompt(topic, n, total, turns)
-    q = clean_question(llm.complete(INTERVIEWER_SYSTEM, prompt, 2000))
+    q = clean_question(llm.complete(INTERVIEWER_SYSTEM, prompt, 4000))
     if not q:
         raise RuntimeError("The interviewer returned an empty question.")
     return q
@@ -28,7 +28,7 @@ def summarize(llm: LLM, topic: str, turns: list[Turn], retries: int = 1) -> Summ
     last: Exception | None = None
     for _ in range(retries + 1):
         try:
-            return parse_summary(llm.complete(SUMMARY_SYSTEM, summary_prompt(topic, turns), 4000))
+            return parse_summary(llm.complete(SUMMARY_SYSTEM, summary_prompt(topic, turns), 8000))
         except ValueError as e:  # pydantic ValidationError and JSONDecodeError are ValueErrors
             last = e
     raise RuntimeError(f"Could not get a valid summary: {last}")

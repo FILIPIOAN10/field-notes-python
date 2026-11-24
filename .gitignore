@@ -5,3 +5,4 @@ __pycache__/
 interviews/
 evals/report.json
 .streamlit/secrets.toml
+.idea/

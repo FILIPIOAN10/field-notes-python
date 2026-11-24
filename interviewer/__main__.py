@@ -2,10 +2,12 @@
 import argparse
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from rich.console import Console
+from rich.markup import escape
 from rich.panel import Panel
 from rich.prompt import IntPrompt, Prompt
 
@@ -20,10 +22,19 @@ console = Console()
 
 def load_dotenv(path: Path = Path(".env")) -> None:
     if path.exists():
-        for line in path.read_text().splitlines():
+        for line in path.read_text(encoding="utf-8").splitlines():
             if "=" in line and not line.lstrip().startswith("#"):
                 k, v = line.split("=", 1)
-                os.environ.setdefault(k.strip(), v.strip())
+                os.environ.setdefault(k.strip(), v.strip().strip("\"'"))
+
+
+def save_interview(folder: Path, record: dict, stamp: datetime) -> Path:
+    """Write the interview as UTF-8 JSON. The encoding is explicit because Windows would otherwise
+    use cp1252 and fail on characters such as ă, ș or →, losing the finished interview."""
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"interview-{stamp:%Y%m%d-%H%M%S}.json"
+    path.write_text(json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
 
 
 def ask_answer(n: int) -> str:
@@ -36,16 +47,21 @@ def ask_answer(n: int) -> str:
 
 def show_summary(s) -> None:
     color = {"positive": "green", "negative": "red", "mixed": "yellow"}.get(s.sentiment_label, "white")
+    # Model text is escaped so a stray "[" in it is shown as text, not read as Rich markup.
     body = (
-        f"{s.overview}\n\n[bold]Themes:[/] {', '.join(s.themes)}\n\n[bold]Key points:[/]\n"
-        + "\n".join(f"  • {p}" for p in s.key_points)
+        f"{escape(s.overview)}\n\n[bold]Themes:[/] {escape(', '.join(s.themes))}\n\n[bold]Key points:[/]\n"
+        + "\n".join(f"  • {escape(p)}" for p in s.key_points)
         + f"\n\n[bold]Sentiment:[/] [{color}]{s.sentiment_label} ({s.sentiment_score:+.2f})[/]"
-        + f"\n[bold]Keywords:[/] {', '.join(s.keywords)}"
+        + f"\n[bold]Keywords:[/] {escape(', '.join(s.keywords))}"
     )
     console.print(Panel(body, title="Summary", border_style="cyan"))
 
 
 def main() -> None:
+    # When output is piped on Windows it uses cp1252; replace what it can't show (→, ș) instead of crashing.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     load_dotenv()
     p = argparse.ArgumentParser(description="Mini AI interviewer powered by Claude.")
     p.add_argument("--topic")
@@ -70,7 +86,7 @@ def main() -> None:
     decisions: list[dict] = []
     try:
         if args.agent:
-            console.print(f"[dim]Agent mode: {MIN_QUESTIONS}-{total} questions, the agent decides.[/]")
+            console.print(f"[dim]Agent mode: up to {total} questions, the agent decides when to stop.[/]")
             while True:
                 ctx = ""
                 if store:
@@ -80,17 +96,17 @@ def main() -> None:
                 with console.status("Agent is deciding..."):
                     d = agent_step(llm, topic, turns, max_q=total, extra_context=ctx)
                 decisions.append({"action": d.action, "reason": d.reason})
-                console.print(f"[magenta dim]→ {d.action}: {d.reason}[/]")
+                console.print(f"[magenta dim]→ {d.action}: {escape(d.reason)}[/]")
                 if d.action == "finish_interview":
                     break
                 n = len(turns) + 1
-                console.print(f"\n[cyan bold]Q{n}[/] {d.question}")
+                console.print(f"\n[cyan bold]Q{n}[/] {escape(d.question)}")
                 turns.append(Turn(question=d.question, answer=ask_answer(n)))
         else:
             for n in range(1, total + 1):
                 with console.status(f"Thinking of question {n}/{total}..."):
                     q = next_question(llm, topic, total, turns, store)
-                console.print(f"\n[cyan bold]Q{n}/{total}[/] {q}")
+                console.print(f"\n[cyan bold]Q{n}/{total}[/] {escape(q)}")
                 turns.append(Turn(question=q, answer=ask_answer(n)))
         with console.status("Analysing your answers..."):
             summary = summarize(llm, topic, turns)
@@ -98,21 +114,18 @@ def main() -> None:
         console.print("\n[yellow]Interview cancelled — nothing saved.[/]")
         return
     except RuntimeError as e:
-        console.print(f"\n[red]Error:[/] {e}")
+        console.print(f"\n[red]Error:[/] {escape(str(e))}")
         return
 
     console.print()
     show_summary(summary)
-    out = Path(args.out)
-    out.mkdir(exist_ok=True)
     stamp = datetime.now(timezone.utc)
-    path = out / f"interview-{stamp:%Y%m%d-%H%M%S}.json"
-    path.write_text(json.dumps({
+    path = save_interview(Path(args.out), {
         "topic": topic, "mode": "agent" if args.agent else "fixed", "document": args.doc,
         "agent_decisions": decisions, "created_at": stamp.isoformat(), "claude_calls": llm.calls,
         "transcript": [t.model_dump() for t in turns], "summary": summary.model_dump(),
-    }, indent=2, ensure_ascii=False))
-    console.print(f"[dim]Saved to {path} · {llm.calls} Claude calls[/]")
+    }, stamp)
+    console.print(f"[dim]Saved to {escape(str(path))} · {llm.calls} model calls[/]")
 
 
 if __name__ == "__main__":
