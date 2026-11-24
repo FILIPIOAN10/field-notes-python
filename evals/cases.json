@@ -1,0 +1,197 @@
+[
+  {
+    "id": "clearly-positive",
+    "topic": "Remote work",
+    "expect": {
+      "labels": [
+        "positive"
+      ],
+      "score_range": [
+        0.4,
+        1
+      ],
+      "keywords": [
+        "flexib",
+        "commut",
+        "family"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "How has remote work changed your days?",
+        "answer": "I love it. No commute, I have two extra hours every day and I see my kids much more."
+      },
+      {
+        "question": "What works best for you?",
+        "answer": "The flexibility. I plan deep work in the morning and I'm far more productive than in the office."
+      },
+      {
+        "question": "Looking ahead, what would you keep?",
+        "answer": "All of it honestly, I would never go back. It improved my family life a lot."
+      }
+    ]
+  },
+  {
+    "id": "clearly-negative",
+    "topic": "Productivity tools",
+    "expect": {
+      "labels": [
+        "negative"
+      ],
+      "score_range": [
+        -1,
+        -0.3
+      ],
+      "keywords": [
+        "notification|distract",
+        "tool",
+        "overwhelm|stress|frustrat"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "What tools do you use daily?",
+        "answer": "Too many. Slack, Jira, Notion, email. It's overwhelming and I hate it."
+      },
+      {
+        "question": "How do they affect your focus?",
+        "answer": "Constant notifications. I can't finish anything, I'm frustrated and stressed every day."
+      },
+      {
+        "question": "What would you change?",
+        "answer": "Honestly I'd delete half of them. They make my job worse, not better."
+      }
+    ]
+  },
+  {
+    "id": "mixed",
+    "topic": "AI in the workplace",
+    "expect": {
+      "labels": [
+        "mixed",
+        "neutral"
+      ],
+      "score_range": [
+        -0.4,
+        0.4
+      ],
+      "keywords": [
+        "job|replace",
+        "time|faster",
+        "trust|accura|mistake"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "How do you use AI at work?",
+        "answer": "It drafts my emails and summaries, saves me a lot of time."
+      },
+      {
+        "question": "Any concerns?",
+        "answer": "Yes, I worry it could replace my job, and it makes mistakes I have to catch."
+      },
+      {
+        "question": "How do you see the future?",
+        "answer": "Useful but I don't fully trust it. Excited and nervous at the same time."
+      }
+    ]
+  },
+  {
+    "id": "neutral-factual",
+    "topic": "Learning new skills",
+    "expect": {
+      "labels": [
+        "neutral",
+        "mixed"
+      ],
+      "score_range": [
+        -0.3,
+        0.4
+      ],
+      "keywords": [
+        "course|online",
+        "evening|time",
+        "python"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "What are you learning right now?",
+        "answer": "Python, through an online course."
+      },
+      {
+        "question": "When do you study?",
+        "answer": "Usually in the evening, about an hour, three times a week."
+      },
+      {
+        "question": "What's next?",
+        "answer": "Finish the course, then maybe a data analysis module."
+      }
+    ]
+  },
+  {
+    "id": "sarcasm",
+    "topic": "Remote work",
+    "expect": {
+      "labels": [
+        "negative",
+        "mixed"
+      ],
+      "score_range": [
+        -1,
+        0
+      ],
+      "keywords": [
+        "meeting|video|call",
+        "lonel|isolat|alone"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "How are team meetings remotely?",
+        "answer": "Oh great, another eight video calls a day, just what everyone dreams of."
+      },
+      {
+        "question": "How connected do you feel to your team?",
+        "answer": "Super connected to my cat. I haven't really talked to a colleague in weeks, it's lonely."
+      },
+      {
+        "question": "What would help?",
+        "answer": "Fewer calls and maybe actually meeting people sometimes."
+      }
+    ]
+  },
+  {
+    "id": "short-answers",
+    "topic": "Scientific research",
+    "expect": {
+      "labels": [
+        "neutral",
+        "mixed",
+        "positive"
+      ],
+      "score_range": [
+        -0.3,
+        0.7
+      ],
+      "keywords": [
+        "fund",
+        "lab|data"
+      ]
+    },
+    "transcript": [
+      {
+        "question": "What is your research about?",
+        "answer": "Climate data."
+      },
+      {
+        "question": "What is hardest?",
+        "answer": "Funding."
+      },
+      {
+        "question": "What keeps you going?",
+        "answer": "The lab team, they are good."
+      }
+    ]
+  }
+]

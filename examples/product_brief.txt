@@ -1,0 +1,11 @@
+FocusFlow is a desktop app for knowledge workers that bundles notifications from Slack, email and Jira
+into three scheduled digests per day (9:00, 13:00, 17:00) instead of real-time pings. Users can mark
+up to five VIP contacts whose messages still come through instantly. A "deep work" timer blocks all
+digests for 90 minutes and shows teammates a status in Slack.
+
+Pricing: free for individuals; Teams plan at 6 EUR per user per month adds shared quiet hours,
+an admin dashboard and weekly focus reports. The main risk the team sees is that users fear missing
+urgent messages, so onboarding explains the VIP list and an "urgent" keyword override.
+
+Planned features: calendar integration to auto-start deep work during blocked slots, AI-written
+digest summaries, and a mobile companion app. Target customers are software teams of 10 to 200 people.
