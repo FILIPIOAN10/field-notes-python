@@ -21,7 +21,7 @@ from interviewer.session import next_question, retrieval_query, summarize
 st.set_page_config(page_title="Field Notes — AI interviewer", page_icon="📝", layout="centered")
 
 # Streamlit secrets → environment, so the same llm.py works locally and in the cloud.
-for key in ("ANTHROPIC_API_KEY", "LLM_PROVIDER", "CLAUDE_MODEL", "AWS_REGION", "VOYAGE_API_KEY"):
+for key in ("ANTHROPIC_API_KEY", "LLM_PROVIDER", "CLAUDE_MODEL", "AWS_REGION", "VOYAGE_API_KEY", "LOVABLE_PROXY_URL", "LOVABLE_PROXY_TOKEN"):
     try:
         if key in st.secrets and not os.getenv(key):
             os.environ[key] = str(st.secrets[key])

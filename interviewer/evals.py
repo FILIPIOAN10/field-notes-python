@@ -61,7 +61,7 @@ def main() -> None:
     p.add_argument("--cases", default="evals/cases.json")
     p.add_argument("--out", default="evals/report.json")
     a = p.parse_args()
-    results = run(json.loads(Path(a.cases).read_text()))
+    results = run(json.loads(Path(a.cases).read_text(encoding="utf-8")))
 
     t = Table(title="Summary prompt evaluation")
     for col in ("case", "label", "score", "label ok", "range ok", "keyword recall", "pass"):
@@ -75,7 +75,7 @@ def main() -> None:
     avg = sum(r.score for r in results) / len(results)
     c.print(f"[bold]{passed}/{len(results)} passed · average score {avg:.0%}[/]")
     Path(a.out).write_text(json.dumps({"passed": passed, "total": len(results), "average": avg,
-                                       "results": [asdict(r) for r in results]}, indent=2))
+                                       "results": [asdict(r) for r in results]}, indent=2), encoding="utf-8")
     c.print(f"[dim]Report saved to {a.out}[/]")
 
 

@@ -20,19 +20,21 @@ TOOLS = [
         "name": "ask_follow_up",
         "description": "Ask a deeper follow-up about the participant's last answer.",
         "input_schema": {"type": "object", "properties": {
-            "question": {"type": "string"}, "reason": {"type": "string"}}, "required": ["question", "reason"]},
+            "question": {"type": "string"}, "reason": {"type": "string"}}, "required": ["question", "reason"],
+            "additionalProperties": False},
     },
     {
         "name": "ask_new_subtopic",
         "description": "Move on to a new, not-yet-covered angle of the topic.",
         "input_schema": {"type": "object", "properties": {
             "question": {"type": "string"}, "subtopic": {"type": "string"}, "reason": {"type": "string"}},
-            "required": ["question", "subtopic", "reason"]},
+            "required": ["question", "subtopic", "reason"], "additionalProperties": False},
     },
     {
         "name": "finish_interview",
         "description": "End the interview because there is enough insight.",
-        "input_schema": {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"]},
+        "input_schema": {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"],
+                         "additionalProperties": False},
     },
 ]
 
@@ -56,7 +58,7 @@ def agent_step(llm, topic: str, turns: list[Turn], min_q: int = MIN_QUESTIONS, m
         + (f"\n\nReference material:\n{extra_context}" if extra_context else "")
         + "\n\nChoose your next action."
     )
-    name, args = llm.complete_tool(AGENT_SYSTEM, user, tools, 2000)
+    name, args = llm.complete_tool(AGENT_SYSTEM, user, tools, 4000)
     if name not in {t["name"] for t in tools}:
         raise RuntimeError(f"The agent chose an unavailable action: {name}")
     if name == "finish_interview":
