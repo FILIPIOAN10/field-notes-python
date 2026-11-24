@@ -1,0 +1,15 @@
+# Secrets never go into the image: they are passed at run time from .env.
+.env
+.streamlit/secrets.toml
+
+# Local state and tooling
+.git
+.venv
+.idea
+.devcontainer
+interviews
+evals/report.json
+__pycache__
+*.pyc
+.pytest_cache
+*.zip

@@ -32,6 +32,20 @@ python -m interviewer --topic "Remote work" --questions 4
 - Tests (27, no network): `pytest -q`
 - Each interview is saved as UTF-8 JSON to `interviews/*.json` (transcript, summary, agent decisions, model call count).
 
+## Run with Docker Compose
+No Python needed — only Docker:
+```bash
+docker compose up --build          # web UI on http://localhost:8501, password "demo", offline mock model
+```
+- To use a real model, create `.env` from `.env.example` first (e.g. `LLM_PROVIDER=anthropic` +
+  `ANTHROPIC_API_KEY`, or `LLM_PROVIDER=lovable` + `LOVABLE_PROXY_TOKEN`) and set your own `APP_PASSWORD`.
+  Secrets are read at run time and never copied into the image (`.dockerignore`).
+- Terminal interview in the same image: `docker compose run --rm app python -m interviewer --agent`
+  (saved to the `interviews` volume).
+- Tests in the container: `docker compose run --rm app pytest -q`
+- Port 8501 taken? `PORT=8502 docker compose up` (PowerShell: `$env:PORT=8502; docker compose up`).
+- The image runs as a non-root user and has a health check on Streamlit's `/_stcore/health`.
+
 ## Live demo (Streamlit Community Cloud)
 1. Push this folder to a GitHub repository.
 2. On https://share.streamlit.io → **Create app** → pick the repo, branch `main`, main file `streamlit_app.py`.
@@ -57,6 +71,7 @@ streamlit_app.py  web UI: password gate, per-visit limit, same session/agent/rag
    ├── rag.py       chunk → embed → VectorStore.search()                │     Anthropic | Lovable proxy | Bedrock | Mock)
    └── evals.py     run cases → score_case() → report                  ─┘
 prompts.py   every prompt in one place          models.py   Pydantic models + pure helpers
+Dockerfile + compose.yaml   one-command local run (web UI, terminal UI and tests in the same image)
 ```
 Design rules: the LLM sits behind a 2-method `LLM` protocol, so providers are swappable and every
 piece of logic is testable with the mock; pure functions (parsing, scoring, chunking) have no I/O.
