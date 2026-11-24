@@ -1,0 +1,26 @@
+# docker compose up --build   ->  http://localhost:8501  (password: demo, offline mock model)
+#
+# Settings come from .env (see .env.example) when it exists:
+#   LLM_PROVIDER=anthropic + ANTHROPIC_API_KEY   real Claude
+#   LLM_PROVIDER=lovable   + LOVABLE_PROXY_TOKEN through the web app's proxy
+#   APP_PASSWORD, MAX_INTERVIEWS_PER_VISIT, CLAUDE_MODEL, CLAUDE_EFFORT
+# Without .env it starts with the deterministic mock model, so it runs with no key at all.
+services:
+  app:
+    build: .
+    image: field-notes-python
+    ports:
+      - "${PORT:-8501}:8501"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Read from .env when set there, otherwise these local-demo defaults apply.
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      APP_PASSWORD: ${APP_PASSWORD:-demo}
+    volumes:
+      - interviews:/app/interviews
+    restart: unless-stopped
+
+volumes:
+  interviews:
